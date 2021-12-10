@@ -1,0 +1,57 @@
+version: "2.4"
+services:
+
+  weston:
+    image: torizon/weston-vivante:2
+    # Accept the EULA required to run imx8 vivante graphic drivers
+    environment:
+     - ACCEPT_FSL_EULA=1
+    # Required to get udev events from host udevd via netlink
+    network_mode: host
+    volumes:
+      - type: bind
+        source: /tmp
+        target: /tmp
+      - type: bind
+        source: /dev
+        target: /dev
+      - type: bind
+        source: /run/udev
+        target: /run/udev
+    cap_add:
+      - CAP_SYS_TTY_CONFIG
+    # Add device access rights through cgroup...
+    device_cgroup_rules:
+      # ... for tty0
+      - 'c 4:0 rmw'
+      # ... for tty7
+      - 'c 4:7 rmw'
+      # ... for /dev/input devices
+      - 'c 13:* rmw'
+      - 'c 199:* rmw'
+      # ... for /dev/dri devices
+      - 'c 226:* rmw'
+    scale: 1
+    command: --developer weston-launch --tty=/dev/tty7 --user=torizon
+    healthcheck:
+        test: ["CMD", "test", "-S", "/tmp/.X11-unix/X0"]
+        interval: 5s
+        timeout: 4s
+        retries: 6
+        start_period: 10s
+
+  wayland:
+    depends_on:
+      weston:
+        condition: service_healthy
+    image: flutter_test:radio 
+    volumes:
+       - /tmp:/tmp 
+       - /sys:/sys
+       - /dev:/dev
+    device_cgroup_rules:
+      # ... for tty0
+      - 'c 199:* rmw'
+      - 'c 116:* rmw'
+      - 'c 226:* rmw'
+    restart: on-failure
