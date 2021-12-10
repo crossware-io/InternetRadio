@@ -27,11 +27,11 @@ RUN apt-get -y update && apt-get install -y \
         gstreamer1.0-pulseaudio 
 
 ADD bundle /app/radio/ 
+COPY radio_test.sh  /app/radio/
 	
 WORKDIR /app/radio/
 ENV PATH="/app/radio:${PATH}"
 
-ENV VIV_PROFILE="1"
 
 ENTRYPOINT ["flutter_new_internetradio"]
 CMD [ "-f", "-b",  "/app/radio"] 
