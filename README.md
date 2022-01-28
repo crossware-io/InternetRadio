@@ -17,7 +17,6 @@ Run the image by providing flutterapplication absolute path
 $docker run --rm -v <path>/flutter_new_internetradio:/InternetRadio flutter_build_env:1
 ```
 
-```
 Copy bundle folder to Flutter_torizon folder available under "flutter_new_internetradio/build/elinux/arm64/debug/bundle" 
 ```
 $ cp -r flutter_new_internetradio/build/elinux/arm64/debug/bundle   Flutter_torizon/ 
