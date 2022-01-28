@@ -1,18 +1,24 @@
 # Crossware Flutter Internet Radio Demo Application 
-This package contains Radio Application source and Docker file to create docker images which run on TorizonCore
+This package contains Radio Application source and Docker files to build and create docker images which run on TorizonCore
 - flutter_new_internetradio (Internet Radio application soruce)
 - Flutter_torizon (Contains Docker file and yaml script)
+- Dockerfile  (to create build env image for crosscompilation)
  
 # STEP-1 Cross compile Flutter application 
 Prepare Host machine with all prerequisites and Create application bundle
+
+Create the Docker image  with Flutter build environment
 ```
-$ cd flutter_new_internetradio  
-$ flutter-elinux build elinux --target-arch=arm64  \
-        --target-sysroot=/opt/tdx-wayland/5.x.y/sysroots/aarch64-tdx-linux  \
-        --system-include-directories=/usr/aarch64-linux-gnu/include/c++/9/aarch64-linux-gnu \
-        --debug
+$ docker build  --no-cache -t  flutter_build_env:1 .
 ```
-Copy bundle folder to Flutter_torizon folder where Docker file exists
+
+Run the image by providing flutterapplication absolute path 
+```
+$docker run --rm -v <path>/flutter_new_internetradio:/InternetRadio flutter_build_env:1
+```
+
+```
+Copy bundle folder to Flutter_torizon folder available under "flutter_new_internetradio/build/elinux/arm64/debug/bundle" 
 ```
 $ cp -r flutter_new_internetradio/build/elinux/arm64/debug/bundle   Flutter_torizon/ 
 ``` 
@@ -34,3 +40,4 @@ docker_compose_flutter.yaml  flutter_test_radio.tar
 # docker stop $(docker ps -a -q)
 # docker-compose -f docker_compose_flutter.yaml up
 ```
+                               
